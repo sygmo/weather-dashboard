@@ -18,7 +18,17 @@
     <main>
         <div class="container-fluid">
             <div class="row">
-                <div class="col-3 bg-info">Search</div>
+                <div class="col-3">
+                    <form>
+                        <div class="mb-3">
+                            <label for="location" class="form-label">Search for a City:</label>
+                            <input type="text" placeholder="Dallas" id="location" class="form-control">
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary" id="submit">Submit</button>
+                        </div>
+                    </form>
+                </div>
                 <div class="col-9">
                     <div class="row">
                         <div class="col bg-success">City Results</div>

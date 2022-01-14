@@ -1,4 +1,28 @@
+var submit = document.querySelector('#submit');
+var cityInput = document.querySelector('#location');
+
+var APIKey = "521a342184e2b2dbb79fddea33585e9f";
+
+// TODO: get unambiguous results with city ID (not required)
+
 // use OpenWeather API to retrieve weather data
+function getApi(event) {
+    event.preventDefault();
+
+    var queryURL = "http://api.openweathermap.org/data/2.5/weather?q=" + cityInput.value + "&appid=" + APIKey;
+
+    fetch(queryURL)
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (data) {
+            console.log(data);
+        })
+}
+
+submit.addEventListener('click', getApi);
+
+
 
 // use localstorage to store persistant data
 
