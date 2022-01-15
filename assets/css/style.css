@@ -1,0 +1,13 @@
+header {
+    margin-bottom: 10px;
+}
+
+.today-weather {
+    border: black solid 2px;
+}
+
+#uv-index {
+    font-size: 0.8rem;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
