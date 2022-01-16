@@ -1,6 +1,9 @@
+.header-div {
+    background-image: linear-gradient(to right, #1b76ff, #052049);
+}
+
 header {
     margin-bottom: 10px;
-    background-image: linear-gradient(to right, #1b76ff, #052049);
 }
 
 #uv-index {
