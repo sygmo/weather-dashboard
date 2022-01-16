@@ -14,11 +14,14 @@ var searchHistory = JSON.parse(localStorage.getItem("history")) ?? [];
 // call on launch
 displaySearchHistory();
 
+// TODO: set default current weather to most recent search
+
 function displaySearchHistory() {
     // remove existing button elements
     while (searchHistoryEl.lastChild) {
         searchHistoryEl.removeChild(searchHistoryEl.lastChild);
     }
+    // display history from newest to oldest
     for (var i = searchHistory.length - 1; i >= 0; i--) {
         console.log(searchHistory[i]);
         var historyItem = document.createElement('button');
@@ -27,8 +30,6 @@ function displaySearchHistory() {
         searchHistoryEl.append(historyItem);
     }
 }
-
-// TODO: get unambiguous results with city ID (not required)
 
 // use OpenWeather API to retrieve weather data
 function getApi(event) {
@@ -39,10 +40,14 @@ function getApi(event) {
     // clear input field
     cityInput.value = ''
 
-    // TODO: validation - return error message if invalid city name
     fetch(queryURL)
         .then(function (response) {
-            return response.json();
+            // handle if empty or incorrect city name is submitted
+            if(response.status === 400 || response.status === 404) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            } else {
+                return response.json();
+            }
         })
         .then(function (data) {
             console.log(data);
@@ -56,24 +61,34 @@ function getApi(event) {
                     searchHistory.shift();
                 }
                 localStorage.setItem("history", JSON.stringify(searchHistory));
+                // update history on page
                 displaySearchHistory();
             }
 
-            cityNameDate.textContent = data.name + " (" + moment.unix(data.dt).format("M/D/YYYY") + ") ";
-            // append weather icon
-            var weatherImage = document.createElement('img');
-            weatherImage.setAttribute('src', "http://openweathermap.org/img/wn/" + data.weather[0].icon + "@2x.png");
-            cityNameDate.append(weatherImage);
-            todayTemp.textContent = data.main.temp;
-            todayWind.textContent = data.wind.speed;
-            todayHumidity.textContent = data.main.humidity;
+            getOneCallApi(data.coord.lat, data.coord.lon, data.name);
+        })
+        .catch(e => {
+            console.log("Problem with the fetch operation: " + e.message);
+        })
+}
 
-            getOneCallApi(data.coord.lat, data.coord.lon);
+// API call when clicking on search history buttons
+function getApiFromHistory(cityName) {
+    var queryURL = "http://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&units=imperial&appid=" + APIKey;
+
+    fetch(queryURL)
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (data) {
+            console.log(data);
+
+            getOneCallApi(data.coord.lat, data.coord.lon, cityName);
         })
 }
 
 // use One Call API to get UVI and 5-day forecast data
-function getOneCallApi(lat, lon) {
+function getOneCallApi(lat, lon, cityName) {
     var queryURL = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&units=imperial&appid=" + APIKey;
 
     fetch(queryURL)
@@ -82,6 +97,18 @@ function getOneCallApi(lat, lon) {
         })
         .then(function (data) {
             console.log(data);
+
+            cityNameDate.textContent = cityName + " (" + moment.unix(data.current.dt).format("M/D/YYYY") + ") ";
+
+            // append weather icon
+            var weatherImage = document.createElement('img');
+            weatherImage.setAttribute('src', "http://openweathermap.org/img/wn/" + data.current.weather[0].icon + "@2x.png");
+            cityNameDate.append(weatherImage);
+
+            todayTemp.textContent = data.current.temp;
+            todayWind.textContent = data.current.wind_speed;
+            todayHumidity.textContent = data.current.humidity;
+
             var uvi = data.current.uvi;
             UVIndex.textContent = uvi;
             // change UVI color based on whether conditions are favorable, moderate, or severe
@@ -96,6 +123,13 @@ function getOneCallApi(lat, lon) {
 }
 
 submit.addEventListener('click', getApi);
+
+searchHistoryEl.addEventListener('click', function (event) {
+    if (event.target.classList.contains('btn')) {
+        console.log("Clicked " + event.target.textContent)
+        getApiFromHistory(event.target.textContent);
+    }
+})
 
 
 
