@@ -5,8 +5,28 @@ var todayTemp = document.querySelector('#today-temp');
 var todayWind = document.querySelector('#today-wind');
 var todayHumidity = document.querySelector('#today-humidity');
 var UVIndex = document.querySelector('#uv-index');
+var searchHistoryEl = document.querySelector('#search-history');
 
 var APIKey = "521a342184e2b2dbb79fddea33585e9f";
+
+var searchHistory = JSON.parse(localStorage.getItem("history")) ?? [];
+
+// call on launch
+displaySearchHistory();
+
+function displaySearchHistory() {
+    // remove existing button elements
+    while (searchHistoryEl.lastChild) {
+        searchHistoryEl.removeChild(searchHistoryEl.lastChild);
+    }
+    for (var i = searchHistory.length - 1; i >= 0; i--) {
+        console.log(searchHistory[i]);
+        var historyItem = document.createElement('button');
+        historyItem.className = 'btn btn-secondary';
+        historyItem.textContent = searchHistory[i];
+        searchHistoryEl.append(historyItem);
+    }
+}
 
 // TODO: get unambiguous results with city ID (not required)
 
@@ -16,6 +36,9 @@ function getApi(event) {
 
     var queryURL = "http://api.openweathermap.org/data/2.5/weather?q=" + cityInput.value + "&units=imperial&appid=" + APIKey;
 
+    // clear input field
+    cityInput.value = ''
+
     // TODO: validation - return error message if invalid city name
     fetch(queryURL)
         .then(function (response) {
@@ -23,6 +46,19 @@ function getApi(event) {
         })
         .then(function (data) {
             console.log(data);
+
+            // store search history in localstorage
+            // prevent duplicates
+            if (!searchHistory.includes(data.name)) {
+                searchHistory.push(data.name);
+                // remove oldest search if history is longer than 8
+                if (searchHistory.length > 8) {
+                    searchHistory.shift();
+                }
+                localStorage.setItem("history", JSON.stringify(searchHistory));
+                displaySearchHistory();
+            }
+
             cityNameDate.textContent = data.name + " (" + moment.unix(data.dt).format("M/D/YYYY") + ") ";
             // append weather icon
             var weatherImage = document.createElement('img');
@@ -63,14 +99,10 @@ submit.addEventListener('click', getApi);
 
 
 
-// use localstorage to store persistant data
-
 
 // GIVEN a weather dashboard with form inputs
 // WHEN I search for a city
-// THEN I am presented with current and future conditions for that city and that city is added to the search history
-// WHEN I view current weather conditions for that city
-// THEN I am presented with the city name, the date, an icon representation of weather conditions, the temperature, the humidity, the wind speed, and the UV index
+// THEN I am presented with current and future conditions for that city
 // WHEN I view future weather conditions for that city
 // THEN I am presented with a 5-day forecast that displays the date, an icon representation of weather conditions, the temperature, the wind speed, and the humidity
 // WHEN I click on a city in the search history
