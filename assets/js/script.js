@@ -6,6 +6,7 @@ var todayWind = document.querySelector('#today-wind');
 var todayHumidity = document.querySelector('#today-humidity');
 var UVIndex = document.querySelector('#uv-index');
 var searchHistoryEl = document.querySelector('#search-history');
+var forecastEl = document.querySelector('#forecast');
 
 var APIKey = "521a342184e2b2dbb79fddea33585e9f";
 
@@ -31,7 +32,7 @@ function displaySearchHistory() {
     }
 }
 
-// use OpenWeather API to retrieve weather data
+// use OpenWeather API to retrieve location data
 function getApi(event) {
     event.preventDefault();
 
@@ -87,7 +88,7 @@ function getApiFromHistory(cityName) {
         })
 }
 
-// use One Call API to get UVI and 5-day forecast data
+// use One Call API to get current weather and 5-day forecast data
 function getOneCallApi(lat, lon, cityName) {
     var queryURL = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&units=imperial&appid=" + APIKey;
 
@@ -119,6 +120,37 @@ function getOneCallApi(lat, lon, cityName) {
             } else {
                 UVIndex.className = 'bg-danger text-white';
             }
+
+            // remove previous 5-day forecast
+            while (forecastEl.lastChild) {
+                forecastEl.removeChild(forecastEl.lastChild);
+            }
+
+            // generate 5-day forecast
+            var dailyForecast = data.daily;
+            for (var i = 0; i < 5; i++) {
+                var dayEl = document.createElement('div');
+
+                var dateEl = document.createElement('h4');
+                dateEl.textContent = moment.unix(dailyForecast[i].dt).format("M/D/YYYY");
+                dayEl.append(dateEl);
+
+                var weatherIcon = document.createElement('img');
+                weatherIcon.setAttribute('src', "http://openweathermap.org/img/wn/" + dailyForecast[i].weather[0].icon + "@2x.png");
+                dayEl.append(weatherIcon);
+
+                var tempP = document.createElement('p');
+                var windP = document.createElement('p');
+                var humidityP = document.createElement('p');
+                tempP.textContent = "Temp: " + dailyForecast[i].temp.day + "°F";
+                windP.textContent = "Wind: " + dailyForecast[i].wind_speed + " MPH";
+                humidityP.textContent = "Humidity: " + dailyForecast[i].humidity + "%";
+                dayEl.append(tempP, windP, humidityP);
+
+                forecastEl.append(dayEl);
+            }
+
+
         })
 }
 
