@@ -1,9 +1,6 @@
 header {
     margin-bottom: 10px;
-}
-
-.today-weather {
-    border: black solid 2px;
+    background-image: linear-gradient(to right, #1b76ff, #052049);
 }
 
 #uv-index {
@@ -15,4 +12,41 @@ header {
 .flex-container {
     display: flex;
     justify-content: space-between;
+}
+
+img {
+    height: 25%;
+}
+
+h2 img {
+    height: 50px;
+}
+
+.forecast-day {
+    height: 225px;
+    flex-basis: 175px;
+    background-color: #052049;
+    padding: 5px;
+}
+
+.col {
+    padding-left: 0;
+    padding-right: 0;
+    margin-right: 10px;
+}
+
+.today-weather {
+    border: black solid 2px;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+label {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+h2,
+h3 {
+    font-weight: bold;
 }
