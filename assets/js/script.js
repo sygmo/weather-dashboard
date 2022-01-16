@@ -36,7 +36,7 @@ function displaySearchHistory() {
 function getApi(event) {
     event.preventDefault();
 
-    var queryURL = "http://api.openweathermap.org/data/2.5/weather?q=" + cityInput.value + "&units=imperial&appid=" + APIKey;
+    var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + cityInput.value + "&units=imperial&appid=" + APIKey;
 
     // clear input field
     cityInput.value = ''
@@ -75,7 +75,7 @@ function getApi(event) {
 
 // API call when clicking on search history buttons
 function getApiFromHistory(cityName) {
-    var queryURL = "http://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&units=imperial&appid=" + APIKey;
+    var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&units=imperial&appid=" + APIKey;
 
     fetch(queryURL)
         .then(function (response) {
@@ -103,7 +103,7 @@ function getOneCallApi(lat, lon, cityName) {
 
             // append weather icon
             var weatherImage = document.createElement('img');
-            weatherImage.setAttribute('src', "http://openweathermap.org/img/wn/" + data.current.weather[0].icon + "@2x.png");
+            weatherImage.setAttribute('src', "https://openweathermap.org/img/wn/" + data.current.weather[0].icon + "@2x.png");
             cityNameDate.append(weatherImage);
 
             todayTemp.textContent = data.current.temp;
@@ -137,7 +137,7 @@ function getOneCallApi(lat, lon, cityName) {
                 dayEl.append(dateEl);
 
                 var weatherIcon = document.createElement('img');
-                weatherIcon.setAttribute('src', "http://openweathermap.org/img/wn/" + dailyForecast[i].weather[0].icon + "@2x.png");
+                weatherIcon.setAttribute('src', "https://openweathermap.org/img/wn/" + dailyForecast[i].weather[0].icon + "@2x.png");
                 dayEl.append(weatherIcon);
 
                 var tempP = document.createElement('p');
